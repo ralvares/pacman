@@ -1,0 +1,64 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  name: mongo-netpol
+  namespace: pacman
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: pacman
+    ports:
+    - port: 27017
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      name: mongo
+  policyTypes:
+  - Ingress
+  - Egress
+status: {}
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  name: pacman-netpol
+  namespace: pacman
+spec:
+  egress:
+  - ports:
+    - port: 27017
+      protocol: TCP
+    to:
+    - podSelector:
+        matchLabels:
+          name: mongo
+  - ports:
+    - port: 5353
+      protocol: UDP
+  podSelector:
+    matchLabels:
+      name: pacman
+  policyTypes:
+  - Ingress
+  - Egress
+status: {}
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  name: default-deny-in-namespace-pacman
+  namespace: pacman
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+status: {}
+
